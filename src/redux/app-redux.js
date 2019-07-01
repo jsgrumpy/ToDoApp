@@ -31,7 +31,7 @@ const initialState = {
   listsChanged: false,
   defaultListKey: 'f5d47123',
 
-  selectedListKey: null,
+  selectedListKey: 'f1wd7a62',
 };
 
 //
@@ -104,19 +104,35 @@ const reducer = (state = initialState, action) => {
     case 'MAKE_LIST_DEFAULT':
       newList = _.cloneDeep(state.toDoLists);
       newList.map((list) => {
-        if (list.key === action.listKey) {
-          return list.default = !list.default
+          if (list.key === action.listKey) {
+            list.default = !list.default;
+          } else {
+            list.default = false;
+          }
+          return list;
         }
-      })
-
+      );
+      newDefaultListKey = state.defaultListKey === action.listKey ? null : action.listKey;
       return {
         ...state,
-        defaultListKey: action.listKey,
+        defaultListKey: newDefaultListKey,
+        toDoLists: newList,
         listsChanged: !state.listsChanged,
       };
+
     case 'REMOVE_LIST':
-      console.log('REMOVE_LIST');
-      return state;
+      newList = _.cloneDeep(state.toDoLists);
+      let result = newList.filter((list) => list.key !== action.listKey);
+      newDefaultListKey = state.defaultListKey === action.listKey ? null : state.defaultListKey;
+      newSelectedListKey = state.selectedListKey === action.listKey ? null : state.selectedListKey;
+      return {
+        ...state,
+        defaultListKey: newDefaultListKey,
+        toDoLists: result,
+        selectedListKey: newSelectedListKey,
+        listsChanged: !state.listsChanged,
+        toDoListChanged: !state.toDoListChanged,
+      };
 
     default:
       return state;

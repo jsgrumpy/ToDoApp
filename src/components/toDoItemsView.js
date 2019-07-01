@@ -7,11 +7,20 @@ import ToDoItem from './toDoItem';
 class ToDoItemsView extends Component {
 
   state = {
+    listKey: this.props.selectedListKey ? this.props.selectedListKey : this.props.defaultListKey,
     ShowCompleted: false,
     inputText: '',
     extraData: false,
 
   };
+
+  componentWillReceiveProps(nextProps, nextContext) {
+    if (this.props.selectedListKey !== nextProps.selectedListKey || this.props.defaultListKey !== nextProps.defaultListKey) {
+      this.setState({
+        listKey: nextProps.selectedListKey ? nextProps.selectedListKey : nextProps.defaultListKey
+      })
+    }
+  }
 
   generateKey = () => {
     return `f${(~~(Math.random() * 1e8)).toString(16)}`;
@@ -33,9 +42,8 @@ class ToDoItemsView extends Component {
 
 
   render() {
-    let listKey = this.props.selectedListKey ? this.props.selectedListKey : this.props.defaultListKey;
-    if (listKey) {
-      let dataForFlatList = this.props.toDoLists.find((list) => list.key === listKey);
+    if (this.state.listKey) {
+      let dataForFlatList = this.props.toDoLists.find((list) => list.key === this.state.listKey);
       return (
         <View style={styles.container}>
           <TextInput
