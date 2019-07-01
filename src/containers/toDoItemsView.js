@@ -5,6 +5,7 @@ import {
   addNewToDoItem,
   removeToDoItem,
   checkAsCompletedItem,
+  editToDoItem,
 } from '../redux/app-redux';
 
 
@@ -27,7 +28,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     checkAsCompletedItem: (itemKey) => {
       dispatch(checkAsCompletedItem(itemKey))
-    }
+    },
+    editToDoItem :(itemKey, itemText) =>{
+      dispatch (editToDoItem(itemKey, itemText))
+  }
 
   }
 };

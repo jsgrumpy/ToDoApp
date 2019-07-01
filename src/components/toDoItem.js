@@ -1,18 +1,53 @@
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import React from 'react';
-import { View, Text, StyleSheet} from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, StyleSheet, TextInput} from 'react-native';
 
 
-const ToDoItem = (props) => (
-  <View style={styles.container}>
-    <Icon name={props.item.complete?'check-circle-o':'circle-o'} size={30} onPress={()=>props.checkAsCompletedItem(props.item.key)} color="#900" />
-    <Text style={styles.text}>
-      {props.item.text}
-    </Text>
-    <Icon name="trash-o" size={30} onPress={()=>props.removeToDoItem(props.item.key)} color="#900" />
-  </View>
-);
+class ToDoItem extends Component {
+
+  state = {
+    editable: false,
+    inputText: this.props.item.text
+  };
+
+  makeItemTextEditable = () => {
+    if (!this.props.item.complete) {
+      this.setState({editable: true});
+      this.textInput.focus();
+    }
+
+  };
+  handleSubmit = () => {
+    if (!this.props.item.complete) {
+      this.props.editToDoItem(this.props.item.key, this.state.inputText)
+    }
+  };
+
+  handleBlur = () => {
+    this.setState({editable: false})
+  };
+
+  render() {
+    let layOut = this.state.editable ? (<TextInput style={styles.text}
+                                                   value={this.state.inputText}
+                                                   onChangeText={(text) => this.setState({inputText: text})}
+                                                   onSubmitEditing={this.handleSubmit}
+                                                   onBlur={this.handleBlur}
+                                                   ref={input => {this.textInput = input}}/>) :
+      (<Text onLongPress={this.makeItemTextEditable}>{this.props.item.text}</Text>);
+    return (
+      <View style={styles.container}>
+        <Icon name={this.props.item.complete ? 'check-circle-o' : 'circle-o'} size={30} color="#900"
+              onPress={() => this.props.checkAsCompletedItem(this.props.item.key)}/>
+        {layOut}
+        <Icon name="trash-o" size={30} color="#900"
+              onPress={() => this.props.removeToDoItem(this.props.item.key)}/>
+      </View>
+    )
+  }
+}
+
 
 const styles = StyleSheet.create({
   container: {

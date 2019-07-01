@@ -6,6 +6,7 @@ import {
   selectList,
   removeList,
   makeListDefault,
+  editListName,
 } from '../redux/app-redux';
 
 
@@ -27,9 +28,12 @@ const mapDispatchToProps = (dispatch) => {
     removeList: (listKey) => {
       dispatch(removeList(listKey))
     },
-    makeListDefault: (listKey) =>{
+    makeListDefault: (listKey) => {
       dispatch(makeListDefault(listKey))
     },
+    editListName: (listKey, newListName) => {
+      dispatch(editListName(listKey, newListName))
+    }
   }
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Lists);

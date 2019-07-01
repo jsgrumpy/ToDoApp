@@ -57,12 +57,13 @@ class ToDoItemsView extends Component {
           />
           <ScrollView>
             <FlatList
+              inverted
               extraData={this.props.toDoListChanged}
               data={dataForFlatList.toDoItems}
               renderItem={({item}) => !item.complete && <ToDoItem item={item}
                                                                   checkAsCompletedItem={this.props.checkAsCompletedItem}
                                                                   removeToDoItem={this.props.removeToDoItem}
-              />}
+                                                                  editToDoItem={this.props.editToDoItem}/>}
             />
             {this.state.ShowCompleted ? <FlatList
               extraData={this.props.toDoListChanged}

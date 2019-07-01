@@ -20,6 +20,7 @@ class Lists extends Component {
             renderItem={({item}) => <ListItem removeList={this.props.removeList}
                                               selectList={this.props.selectList}
                                               makeListDefault={this.props.makeListDefault}
+                                              editListName={this.props.editListName}
                                               item={item}/>}
           />
           <Button title={!this.state.showInput ? 'Add new list' : 'Cancel'} onPress={this.handleAddNewListButtonClick}/>
@@ -46,7 +47,7 @@ class Lists extends Component {
     this.setState({
       showInput: !this.state.showInput
     })
-  }
+  };
 
   handleAddNewList = () => {
     let newList = {key: this.generateKey(), default:false, name: this.state.inputText, toDoItems: []};

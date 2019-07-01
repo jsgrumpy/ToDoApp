@@ -5,6 +5,7 @@ import _ from 'lodash';
 let newList;
 let newSelectedListKey;
 let newDefaultListKey;
+let currentKey;
 
 //
 //Initial State
@@ -30,7 +31,6 @@ const initialState = {
   toDoListChanged: false,
   listsChanged: false,
   defaultListKey: 'f5d47123',
-
   selectedListKey: 'f1wd7a62',
 };
 
@@ -41,7 +41,6 @@ const initialState = {
 const reducer = (state = initialState, action) => {
 
   switch (action.type) {
-
     case'ADD_NEW_TODO_ITEM':
       newList = _.cloneDeep(state.toDoLists);
       newList.forEach((item) => {
@@ -55,13 +54,33 @@ const reducer = (state = initialState, action) => {
         toDoListChanged: !state.toDoListChanged
       };
 
+    case 'EDIT_TODO_ITEM':
+      currentKey = state.selectedListKey ? state.selectedListKey : state.defaultListKey;
+      newList = _.cloneDeep(state.toDoLists);
+      newList.forEach((el) => {
+        if (el.key === currentKey) {
+          el.toDoItems.forEach((item) => {
+            if (item.key === action.itemKey) {
+              item.text = action.itemText
+            }
+          })
+        }
+      });
+      return {
+        ...state,
+        toDoLists: newList,
+        toDoListChanged: !state.toDoListChanged,
+      };
+
     case 'REMOVE_TODO_ITEM':
       newList = _.cloneDeep(state.toDoLists);
       newList.map((el) => {
-        if (el.key === state.selectedListKey) {
+        currentKey = state.selectedListKey ? state.selectedListKey : state.defaultListKey;
+
+        if (el.key === currentKey) {
           return el.toDoItems = el.toDoItems.filter((item) => item.key !== action.itemKey);
         }
-      })
+      });
       return {
         ...state,
         toDoLists: newList,
@@ -69,9 +88,9 @@ const reducer = (state = initialState, action) => {
       };
     case 'CHECK_AS_COMPETES_ITEM':
       newList = _.cloneDeep(state.toDoLists);
-
+      currentKey = state.selectedListKey ? state.selectedListKey : state.defaultListKey;
       for (let i = 0; i < newList.length; i++) {
-        if (newList[i].key === state.selectedListKey) {
+        if (newList[i].key === currentKey) {
           for (let j = 0; j < newList[i].toDoItems.length; j++) {
             if (newList[i].toDoItems[j].key === action.itemKey) {
               newList[i].toDoItems[j].complete = !newList[i].toDoItems[j].complete;
@@ -95,12 +114,12 @@ const reducer = (state = initialState, action) => {
       };
 
     case 'SELECT_LIST':
-      console.log('SELECT_LIST');
       return {
         ...state,
         selectedListKey: action.listKey,
         listsChanged: !state.listsChanged
       };
+
     case 'MAKE_LIST_DEFAULT':
       newList = _.cloneDeep(state.toDoLists);
       newList.map((list) => {
@@ -132,6 +151,21 @@ const reducer = (state = initialState, action) => {
         selectedListKey: newSelectedListKey,
         listsChanged: !state.listsChanged,
         toDoListChanged: !state.toDoListChanged,
+      };
+
+    case 'EDIT_LIST_NAME':
+      newList = _.cloneDeep(state.toDoLists);
+      newList.map((list) => {
+          if (list.key === action.listKey) {
+            list.name = action.newListName;
+          }
+          return list;
+        }
+      );
+      return {
+        ...state,
+        toDoLists: newList,
+        listsChanged: !state.listsChanged
       };
 
     default:
@@ -194,6 +228,20 @@ const makeListDefault = (listKey) => {
     listKey: listKey
   }
 };
+const editToDoItem = (itemKey, itemText) => {
+  return {
+    type: 'EDIT_TODO_ITEM',
+    itemKey: itemKey,
+    itemText: itemText
+  }
+};
+const editListName = (listKey, newListName) => {
+  return {
+    type: 'EDIT_LIST_NAME',
+    listKey: listKey,
+    newListName: newListName,
+  }
+};
 
 export {
   addNewToDoItem,
@@ -202,6 +250,8 @@ export {
   removeList,
   selectList,
   checkAsCompletedItem,
-  makeListDefault
+  makeListDefault,
+  editToDoItem,
+  editListName
 };
 
