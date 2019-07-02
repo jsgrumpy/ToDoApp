@@ -35,12 +35,14 @@ class ToDoItem extends Component {
                                                    onSubmitEditing={this.handleSubmit}
                                                    onBlur={this.handleBlur}
                                                    ref={input => {this.textInput = input}}/>) :
-      (<Text onLongPress={this.makeItemTextEditable}>{this.props.item.text}</Text>);
+      (<Text>{this.props.item.text}</Text>);
     return (
       <View style={styles.container}>
         <Icon name={this.props.item.complete ? 'check-circle-o' : 'circle-o'} size={30} color="#900"
               onPress={() => this.props.checkAsCompletedItem(this.props.item.key)}/>
         {layOut}
+        <Icon name={'edit'} size={30} color="#900"
+              onPress={this.makeItemTextEditable}/>
         <Icon name="trash-o" size={30} color="#900"
               onPress={() => this.props.removeToDoItem(this.props.item.key)}/>
       </View>

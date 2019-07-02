@@ -34,7 +34,7 @@ class ListItem extends Component {
                                                      this.textInput = input
                                                    }}/>) :
       (<Text style={styles.text}
-             onPress={() => props.selectList(this.props.item.key)}
+             onPress={() => this.props.selectList(this.props.item.key)}
              onLongPress={this.makeItemTextEditable}>
         {this.props.item.name}
       </Text>);
