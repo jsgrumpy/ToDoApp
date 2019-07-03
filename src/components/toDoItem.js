@@ -3,6 +3,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 
+import {styles, colors} from '../styles/generalStyles';
 
 class ToDoItem extends Component {
 
@@ -11,15 +12,19 @@ class ToDoItem extends Component {
     inputText: this.props.item.text
   };
 
+  componentDidUpdate() {
+    if (this.state.editable) {
+      this.toDoEditingInput.focus();
+    }
+  }
+
   makeItemTextEditable = () => {
     if (!this.props.item.complete) {
       this.setState({editable: true});
-      this.textInput.focus();
     }
-
   };
   handleSubmit = () => {
-    if (!this.props.item.complete) {
+    if (!this.props.item.complete && this.state.inputText !== '') {
       this.props.editToDoItem(this.props.item.key, this.state.inputText)
     }
   };
@@ -29,45 +34,32 @@ class ToDoItem extends Component {
   };
 
   render() {
-    let layOut = this.state.editable ? (<TextInput style={styles.text}
-                                                   value={this.state.inputText}
-                                                   onChangeText={(text) => this.setState({inputText: text})}
-                                                   onSubmitEditing={this.handleSubmit}
-                                                   onBlur={this.handleBlur}
-                                                   ref={input => {this.textInput = input}}/>) :
-      (<Text>{this.props.item.text}</Text>);
+    let layOut = this.state.editable ? (
+        <TextInput
+          value={this.state.inputText}
+          onChangeText={(text) => this.setState({inputText: text})}
+          onSubmitEditing={this.handleSubmit}
+          onBlur={this.handleBlur}
+          ref={input => {
+            this.toDoEditingInput = input
+          }}/>) :
+      (<View style={styles.text}><Text>{this.props.item.text}</Text></View>);
     return (
-      <View style={styles.container}>
-        <Icon name={this.props.item.complete ? 'check-circle-o' : 'circle-o'} size={30} color="#900"
+      <View style={styles.listItem}>
+        <Icon style={styles.icons} name={this.props.item.complete ? 'check-circle-o' : 'circle-o'} size={30}
+              color={colors.iconColor}
               onPress={() => this.props.checkAsCompletedItem(this.props.item.key)}/>
         {layOut}
-        <Icon name={'edit'} size={30} color="#900"
-              onPress={this.makeItemTextEditable}/>
-        <Icon name="trash-o" size={30} color="#900"
-              onPress={() => this.props.removeToDoItem(this.props.item.key)}/>
+        <View style={styles.iconContainer}>
+          {!this.props.item.complete && <Icon style={styles.icons} name={'edit'} size={30} color={colors.iconColor}
+                                              onPress={this.makeItemTextEditable}/>}
+          <Icon style={styles.icons} name="trash-o" size={30} color={colors.iconColor}
+                onPress={() => this.props.removeToDoItem(this.props.item.key)}/>
+        </View>
       </View>
     )
   }
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  text: {
-    marginLeft: 12,
-    fontSize: 16,
-  },
-  photo: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-  },
-});
 
 
 export default ToDoItem;

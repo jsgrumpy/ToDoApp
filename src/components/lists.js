@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {View, FlatList, StyleSheet, TextInput, Button, ScrollView} from 'react-native';
 
+import {styles, colors} from '../styles/generalStyles';
+
 import ListItem from './listItem'
 
 class Lists extends Component {
@@ -10,22 +12,32 @@ class Lists extends Component {
     extraData: false,
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.state.showInput) {
+      this.textInput.focus();
+
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <ScrollView>
           <FlatList
+            style={styles.listItemsContainer}
             extraData={this.props.listsChanged}
             data={this.props.toDoLists}
             renderItem={({item}) => <ListItem removeList={this.props.removeList}
                                               selectList={this.props.selectList}
                                               makeListDefault={this.props.makeListDefault}
                                               editListName={this.props.editListName}
-                                              item={item}/>}
-          />
-          <Button title={!this.state.showInput ? 'Add new list' : 'Cancel'} onPress={this.handleAddNewListButtonClick}/>
+                                              item={item}/>}/>
+          <Button
+            color={colors.buttons}
+            title={!this.state.showInput ? 'Add new list' : 'Cancel'}
+            onPress={this.handleAddNewListButtonClick}/>
           <TextInput
-            style={[{height: 40}, !this.state.showInput && {display: 'none'}]}
+            style={[styles.inputText, !this.state.showInput && {display: 'none'}]}
             placeholder="Add new list..."
             onChangeText={(text) => this.setState({inputText: text})}
             onSubmitEditing={this.handleAddNewList}
@@ -50,28 +62,17 @@ class Lists extends Component {
   };
 
   handleAddNewList = () => {
-    let newList = {key: this.generateKey(), default:false, name: this.state.inputText, toDoItems: []};
-
-    this.props.addNewList(newList);
-    this.setState({
-      inputText: ''
-    });
-    this.textInput.clear();
+    if (this.state.inputText !== '') {
+      let newList = {key: this.generateKey(), default: false, name: this.state.inputText, toDoItems: []};
+      this.props.addNewList(newList);
+      this.setState({
+        inputText: ''
+      });
+      this.textInput.clear();
+    }
+    this.handleAddNewListButtonClick();
   };
-
-
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 20,
-  },
-  separator: {
-    flex: 1,
-    backgroundColor: '#8E8E8E',
-  },
-});
 
 
 export default Lists;

@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import {View, FlatList, StyleSheet, TextInput, Button, ScrollView, Text} from 'react-native';
+import {View, FlatList, StyleSheet, TextInput, Button, ScrollView, Text, TouchableOpacity} from 'react-native';
+import DraggableFlatList from 'react-native-draggable-flatlist'
 
+import {styles, colors} from '../styles/generalStyles';
 import ToDoItem from './toDoItem';
 
 
@@ -26,7 +28,6 @@ class ToDoItemsView extends Component {
     return `f${(~~(Math.random() * 1e8)).toString(16)}`;
   };
 
-
   handleAddNewItem = (listKey) => {
     let newToDoItem = {key: this.generateKey(), text: this.state.inputText, complete: false};
     this.props.addNewToDoItem(listKey, newToDoItem);
@@ -39,7 +40,18 @@ class ToDoItemsView extends Component {
   handleShowCompletedPress = () => {
     this.setState({ShowCompleted: !this.state.ShowCompleted})
   };
-
+  renderNonCompletedItem = ({item, index, move, moveEnd, isActive}) => {
+    return (
+      <TouchableOpacity
+        onLongPress={move}
+        onPressOut={moveEnd}>
+        {!item.complete && <ToDoItem item={item}
+                                     checkAsCompletedItem={this.props.checkAsCompletedItem}
+                                     removeToDoItem={this.props.removeToDoItem}
+                                     editToDoItem={this.props.editToDoItem}/>}
+      </TouchableOpacity>
+    )
+  };
 
   render() {
     if (this.state.listKey) {
@@ -47,7 +59,7 @@ class ToDoItemsView extends Component {
       return (
         <View style={styles.container}>
           <TextInput
-            style={{height: 40}}
+            style={styles.inputText}
             placeholder="Add new toDo item.."
             onChangeText={(text) => this.setState({inputText: text})}
             onSubmitEditing={() => this.handleAddNewItem(dataForFlatList.key)}
@@ -56,25 +68,27 @@ class ToDoItemsView extends Component {
             }}
           />
           <ScrollView>
-            <FlatList
-              inverted
-              extraData={this.props.toDoListChanged}
-              data={dataForFlatList.toDoItems}
-              renderItem={({item}) => !item.complete && <ToDoItem item={item}
-                                                                  checkAsCompletedItem={this.props.checkAsCompletedItem}
-                                                                  removeToDoItem={this.props.removeToDoItem}
-                                                                  editToDoItem={this.props.editToDoItem}/>}
-            />
-            {this.state.ShowCompleted ? <FlatList
-              extraData={this.props.toDoListChanged}
-              data={dataForFlatList.toDoItems}
-              renderItem={({item}) => item.complete && <ToDoItem item={item}
-                                                                 checkAsCompletedItem={this.props.checkAsCompletedItem}
-                                                                 removeToDoItem={this.props.removeToDoItem}
-              />}
-            /> : null
-            }
-            <Button title={!this.state.ShowCompleted ? 'Show completed items' : 'Hide Completed items'}
+            <View style={styles.listItemsContainer}>
+              <DraggableFlatList
+                inverted
+                scrollPercent={5}
+                onMoveEnd={({data}) => this.props.updateListOrder(this.state.listKey, data)}
+                extraData={this.props.toDoListChanged}
+                data={dataForFlatList.toDoItems}
+                renderItem={this.renderNonCompletedItem}
+              />
+              {this.state.ShowCompleted ? <FlatList
+                style={styles.completedContainer}
+                extraData={this.props.toDoListChanged}
+                data={dataForFlatList.toDoItems}
+                renderItem={({item}) => item.complete && <ToDoItem item={item}
+                                                                   checkAsCompletedItem={this.props.checkAsCompletedItem}
+                                                                   removeToDoItem={this.props.removeToDoItem}/>}
+              /> : null
+              }
+            </View>
+            <Button color={colors.buttons}
+                    title={!this.state.ShowCompleted ? 'Show completed items' : 'Hide Completed items'}
                     onPress={this.handleShowCompletedPress}/>
           </ScrollView>
         </View>
@@ -84,16 +98,5 @@ class ToDoItemsView extends Component {
     }
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 20,
-  },
-  separator: {
-    flex: 1,
-    backgroundColor: '#8E8E8E',
-  },
-});
 
 export default ToDoItemsView;

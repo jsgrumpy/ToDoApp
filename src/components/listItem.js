@@ -2,6 +2,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 
+import {styles, colors} from '../styles/generalStyles';
 
 class ListItem extends Component {
 
@@ -31,42 +32,27 @@ class ListItem extends Component {
                                                    onSubmitEditing={this.handleSubmit}
                                                    onBlur={this.handleBlur}
                                                    ref={input => {
-                                                     this.textInput = input
-                                                   }}/>) :
+                                                     this.textInput = input}}/>) :
       (<Text style={styles.text}
              onPress={() => this.props.selectList(this.props.item.key)}
              onLongPress={this.makeItemTextEditable}>
         {this.props.item.name}
       </Text>);
     return (
-      <View style={styles.container}>
+      <View style={styles.listItem}>
         {layOut}
-        <Icon name={!this.props.item.default ? 'star-o' : 'star'} size={30} color="#FFE400"
-              onPress={() => this.props.makeListDefault(this.props.item.key)}/>
-        <Icon name="trash-o" size={30} color="#900"
-              onPress={() => this.props.removeList(this.props.item.key)}/>
+        <View style={styles.iconContainer}>
+          <Icon name={!this.props.item.default? 'star-o' : 'star'} size={30} color={colors.starIcon}
+                style={styles.icons}
+                onPress={() => this.props.makeListDefault(this.props.item.key)}/>
+          <Icon name="trash-o" size={30} color={colors.iconColor}
+                style={styles.icons}
+                onPress={() => this.props.removeList(this.props.item.key)}/>
+        </View>
       </View>
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  text: {
-    marginLeft: 12,
-    fontSize: 16,
-  },
-  photo: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-  },
-});
 
 
 export default ListItem;

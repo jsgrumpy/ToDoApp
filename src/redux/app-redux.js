@@ -14,24 +14,25 @@ let currentKey;
 const initialState = {
   toDoLists: [
     {
-      key: 'f5d47123', name: 'List #1', default: true, toDoItems: [
-        {key: 'f5d47a64', text: 'default todo item #1', complete: false},
-        {key: 'f1w47a61', text: 'todo item #2', complete: false},
-        {key: 'f5d4uj84', text: 'todo item #3', complete: false},
-        {key: 'f5lw7a64', text: 'todo item #4', complete: true},]
+      key: 'f5d47123', name: 'To Buy', default: false, toDoItems: [
+        {key: 'f5d47a64', text: 'Milk', complete: false},
+        {key: 'f1w47a61', text: 'Water', complete: false},
+        {key: 'f5d4uj84', text: 'Bread', complete: false},
+        {key: 'f5lw7a64', text: 'Chocolate', complete: true},]
     },
     {
-      key: 'f1wd7a62', name: 'List #2', default: false, toDoItems: [
-        {key: 'f5d47q64', text: 'selected todo item #1', complete: false},
-        {key: 'fvw47a61', text: 'todo item #2', complete: false},
-        {key: 'f5d4vj84', text: 'todo item #3', complete: false},
-        {key: 'f5lw7a6v', text: 'todo item #4', complete: true},]
+      key: 'f1wd7a62', name: 'To do this week', default: false, toDoItems: [
+        {key: 'f5d47q64', text: 'Go for a walk', complete: true},
+        {key: 'fvw47a61', text: 'Meet with friends', complete: false},
+        {key: 'f5d4vj84', text: 'Buy some food', complete: false},
+        {key: 'f5lw7a6v', text: 'Find a camera', complete: false},
+      ]
     },
   ],
   toDoListChanged: false,
   listsChanged: false,
-  defaultListKey: 'f5d47123',
-  selectedListKey: 'f1wd7a62',
+  defaultListKey: null,
+  selectedListKey: null,
 };
 
 //
@@ -168,6 +169,20 @@ const reducer = (state = initialState, action) => {
         listsChanged: !state.listsChanged
       };
 
+    case 'UPDATE_LIST_ORDER':
+      newList = _.cloneDeep(state.toDoLists);
+      newList.map((list) => {
+          if (list.key === action.listKey) {
+            return list.toDoItems = action.newListOrder;
+          }
+        }
+      );
+      return {
+        ...state,
+        toDoLists: newList,
+        toDoListChanged: !state.toDoListChanged,
+      };
+
     default:
       return state;
   }
@@ -242,7 +257,13 @@ const editListName = (listKey, newListName) => {
     newListName: newListName,
   }
 };
-
+const updateListOrder = (listKey, newListOrder) => {
+  return {
+    type: 'UPDATE_LIST_ORDER',
+    listKey: listKey,
+    newListOrder: newListOrder,
+  }
+};
 export {
   addNewToDoItem,
   removeToDoItem,
@@ -252,6 +273,7 @@ export {
   checkAsCompletedItem,
   makeListDefault,
   editToDoItem,
-  editListName
+  editListName,
+  updateListOrder
 };
 

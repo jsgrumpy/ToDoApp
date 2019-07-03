@@ -6,6 +6,7 @@ import {
   removeToDoItem,
   checkAsCompletedItem,
   editToDoItem,
+  updateListOrder,
 } from '../redux/app-redux';
 
 
@@ -31,8 +32,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     editToDoItem :(itemKey, itemText) =>{
       dispatch (editToDoItem(itemKey, itemText))
-  }
-
+  },
+    updateListOrder: (listKey, newListOrder) => {
+      dispatch(updateListOrder(listKey, newListOrder))
+    },
   }
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ToDoItemsView);
